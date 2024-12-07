@@ -3,9 +3,12 @@ import Home from 'pages/Home';
 import Rates from 'pages/Rates';
 import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { getUserInfo } from './service/opencagedataApi';
+import { fetchCurrency } from 'reduxState/operations';
+import { useDispatch } from 'react-redux';
+import { setBaseCurrency } from 'reduxState/currencySlice';
 
 export const App = () => {
+  const dispatch = useDispatch();
   useEffect(() => {
     var options = {
       enableHighAccuracy: true,
@@ -14,16 +17,15 @@ export const App = () => {
     };
 
     function success(pos) {
-      getUserInfo(pos.coords);
+      dispatch(fetchCurrency(pos.coords));
     }
 
-    function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+    function error() {
+      dispatch(setBaseCurrency('USD'));
     }
 
     navigator.geolocation.getCurrentPosition(success, error, options);
-  }, []);
-
+  }, [dispatch]);
   return (
     <>
       <Header />
