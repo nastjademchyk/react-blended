@@ -1,12 +1,20 @@
-import { createSelector } from "@reduxjs/toolkit";
+import { createSelector } from '@reduxjs/toolkit';
 
 export const selectBaseCurrency = state => state.currency.baseCurrency;
 export const selectExchangeInfo = state => state.currency.exchangeInfo;
 export const selectIsLoading = state => state.currency.isLoading;
 export const selectIsError = state => state.currency.isError;
 export const selectRates = state => state.currency.rates;
-export const selectFilteredRates = createSelector([selectRates, selectBaseCurrency], (rates, baseCurrency) => {
+export const selectFilter = state => state.filter.currency;
+export const selectFilteredRates = createSelector(
+  [selectRates, selectBaseCurrency, selectFilter],
+  (rates, baseCurrency, filter) => {
     return rates
-  .filter(([key]) => key !== baseCurrency)
-  .map(([key, value]) => ({ key, value: (1 / value).toFixed(2) }));
-})
+      .filter(
+        ([key]) =>
+          key !== baseCurrency &&
+          key.toLowerCase().includes(filter.toLowerCase()),
+      )
+      .map(([key, value]) => ({ key, value: (1 / value).toFixed(2) }));
+  },
+);
